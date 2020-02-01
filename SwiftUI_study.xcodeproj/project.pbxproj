@@ -16,7 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		170F965723E54FB000D54BA2 /* SwiftUI_study.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftUI_study.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		170F965723E54FB000D54BA2 /* SwiftUI_ZoomDragIImage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftUI_ZoomDragIImage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		170F965A23E54FB000D54BA2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		170F965C23E54FB000D54BA2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		170F965E23E54FB000D54BA2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -48,7 +48,7 @@
 		170F965823E54FB000D54BA2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				170F965723E54FB000D54BA2 /* SwiftUI_study.app */,
+				170F965723E54FB000D54BA2 /* SwiftUI_ZoomDragIImage.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -92,7 +92,7 @@
 			);
 			name = SwiftUI_study;
 			productName = SwiftUI_study;
-			productReference = 170F965723E54FB000D54BA2 /* SwiftUI_study.app */;
+			productReference = 170F965723E54FB000D54BA2 /* SwiftUI_ZoomDragIImage.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -293,7 +293,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.hansoolabs.SwiftUI-study";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = SwiftUI_ZoomDragIImage;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -312,7 +312,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.hansoolabs.SwiftUI-study";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = SwiftUI_ZoomDragIImage;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
