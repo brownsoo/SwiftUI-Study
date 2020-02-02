@@ -9,7 +9,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var lastDelta: CGFloat = 1.0
+    
+    let maxScale: CGFloat = 3.0
+    let minScale: CGFloat = 1.0
+    
+    @State var lastValue: CGFloat = 1.0
     @State var scale: CGFloat = 1.0
     @State var draged: CGSize = .zero
     @State var prevDraged: CGSize = .zero
@@ -18,72 +22,88 @@ struct ContentView: View {
     
     var body: some View {
         let magnify = MagnificationGesture(minimumScaleDelta: 0.2)
-            .onChanged { (value: MagnificationGesture.Value) in
-                let resolvedDelta = value / self.lastDelta
-                self.lastDelta = value
+            .onChanged { value in
+                let resolvedDelta = value / self.lastValue
+                self.lastValue = value
                 let newScale = self.scale * resolvedDelta
-                self.scale = min(2.5, max(0.8, newScale))
+                self.scale = min(self.maxScale, max(self.minScale, newScale))
                 
                 print("delta=\(value) resolvedDelta=\(resolvedDelta)  newScale=\(newScale)")
-        }.onEnded { value in
-            // without this the next gesture will be broken
-            self.lastDelta = 1.0
-            print("lastDelta=\(self.lastDelta)")
         }
         
-        let gestureTap = TapGesture(count: 2).onEnded({
-            self.isTapped = !self.isTapped
-        })
-        
-        let gestureDrag = DragGesture(minimumDistance: 0, coordinateSpace: .global)
+        let gestureDrag = DragGesture(minimumDistance: 0, coordinateSpace: .local)
             .onChanged { (value) in
                 self.tapPoint = value.startLocation
-                self.draged = CGSize(width: value.translation.width + self.prevDraged.width, height: value.translation.height + self.prevDraged.height)
+                self.draged = CGSize(width: value.translation.width + self.prevDraged.width,
+                                     height: value.translation.height + self.prevDraged.height)
         }
         
-        
-        return
-            GeometryReader { geo in
+        return GeometryReader { geo in
                 Image("dooli")
                     .resizable().scaledToFit().animation(.default)
                     .offset(self.draged)
                     .scaleEffect(self.scale)
-                    .scaleEffect(self.isTapped ? 2 : 1, anchor: UnitPoint(x: self.tapPoint.x / geo.frame(in: .global).maxX, y: self.tapPoint.y / geo.frame(in: .global).maxY))
-                    .gesture(gestureTap.simultaneously(with:
-                        gestureDrag.onEnded { (value) in
-                            let parentWidth = geo.frame(in: .global).maxX
-                            let parentHeight = geo.frame(in: .global).maxY
-                            let offset = CGSize(width: parentWidth * self.scale - parentWidth / 2,
-                                                height: parentHeight * self.scale - parentHeight / 2)
-                            let newDraged = CGSize(width: self.draged.width * self.scale,
-                                                   height: self.draged.height * self.scale)
-                            var resolved = CGSize()
-                            if newDraged.width > offset.width {
-                                resolved.width = offset.width / self.scale
-                            } else if newDraged.width < -offset.width {
-                                resolved.width = -offset.width / self.scale
+//                    .scaleEffect(self.isTapped ? 2 : 1,
+//                                 anchor: UnitPoint(x: self.tapPoint.x / geo.frame(in: .local).maxX,
+//                                                   y: self.tapPoint.y / geo.frame(in: .local).maxY))
+                    .gesture(
+                        TapGesture(count: 2).onEnded({
+                            self.isTapped.toggle()
+                            if self.scale > 1 {
+                                self.scale = 1
                             } else {
-                                resolved.width = value.translation.width + self.prevDraged.width
+                                self.scale = 2
                             }
-                            if newDraged.height > offset.height {
-                                resolved.height = offset.height / self.scale
-                            } else if newDraged.width < -offset.width {
-                                resolved.height = -offset.height / self.scale
-                            } else {
-                                resolved.height = value.translation.height + self.prevDraged.height
-                            }
-                            self.draged = resolved
-                            self.prevDraged = resolved
-                        }
+                            let parent = geo.frame(in: .local)
+                            self.postArranging(translation: CGSize.zero, in: parent)
+                        })
+                        .simultaneously(with: gestureDrag.onEnded({ (value) in
+                            let parent = geo.frame(in: .local)
+                            self.postArranging(translation: value.translation, in: parent)
+                        })
                     ))
-                    .gesture(magnify)
+                    .gesture(magnify.onEnded { value in
+                        // without this the next gesture will be broken
+                        self.lastValue = 1.0
+                        let parent = geo.frame(in: .local)
+                        self.postArranging(translation: CGSize.zero, in: parent)
+                    })
             }
             .frame(height: 300)
             .clipped()
             .background(Color.gray)
-            .gesture(magnify)
         
     }
+    
+    private func postArranging(translation: CGSize, in parent: CGRect) {
+        let scaled = self.scale
+        let parentWidth = parent.maxX
+        let parentHeight = parent.maxY
+        let offset = CGSize(width: (parentWidth * scaled - parentWidth) / 2,
+                            height: (parentHeight * scaled - parentHeight) / 2)
+        
+        print(offset)
+        var resolved = CGSize()
+        let newDraged = CGSize(width: self.draged.width * scaled,
+                               height: self.draged.height * scaled)
+        if newDraged.width > offset.width {
+            resolved.width = offset.width / scaled
+        } else if newDraged.width < -offset.width {
+            resolved.width = -offset.width / scaled
+        } else {
+            resolved.width = translation.width + self.prevDraged.width
+        }
+        if newDraged.height > offset.height {
+            resolved.height = offset.height / scaled
+        } else if newDraged.height < -offset.height {
+            resolved.height = -offset.height / scaled
+        } else {
+            resolved.height = translation.height + self.prevDraged.height
+        }
+        self.draged = resolved
+        self.prevDraged = resolved
+    }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
