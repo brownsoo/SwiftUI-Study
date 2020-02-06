@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:SwiftUI_study.xcodeproj">
+      location = "self:/Users/brownsoo/Workspace/SwiftUI-ZoomImage/SwiftUI_ZoomImage.xcodeproj">
    </FileRef>
 </Workspace>
